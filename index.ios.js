@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import {
   Text,
+  TouchableHighlight,
   View,
   AppRegistry,
   StyleSheet,
@@ -19,12 +20,12 @@ const styles = StyleSheet.create({
     alignItems: 'stretch',
   },
   timer: {
-    flex: 1,
+    flex: 5,
     justifyContent: 'center',
     alignItems: 'center',
   },
   buttons: {
-    flex: 1,
+    flex: 3,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-around',
@@ -37,13 +38,19 @@ const styles = StyleSheet.create({
 });
 
 class Stopwatch extends Component {
+  onPress() {
+    console.log('start button clicked!');
+  }
   startStopButton() {
     return (
-      <View style={styles.startButton}>
+      <TouchableHighlight
+        underlayColor={'grey'}
+        onPress={this.onPress}
+      >
         <Text>
           Start
         </Text>
-      </View>
+      </TouchableHighlight>
     );
   }
   lapButton() {

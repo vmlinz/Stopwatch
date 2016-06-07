@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import Moment from 'moment';
+import padStart from 'lodash-es/padStart';
 import {
   Text,
   TouchableHighlight,
@@ -38,8 +40,18 @@ const styles = StyleSheet.create({
 });
 
 class Stopwatch extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { timeElapsed: 0 };
+    this.onPress = this.onPress.bind(this);
+  }
   onPress() {
-    console.log('start button clicked!');
+    const start = new Date();
+    setInterval(() => {
+      this.setState({
+        timeElapsed: new Date() - start,
+      });
+    }, 30);
   }
   startStopButton() {
     return (
@@ -68,13 +80,21 @@ class Stopwatch extends Component {
       borderWidth: 4,
     };
   }
+  formatDuration(time) {
+    const duration = Moment.duration(time);
+    const hours = padStart(duration.hours().toString(), 2, '0');
+    const minutes = padStart(duration.minutes().toString(), 2, '0');
+    const seconds = padStart(duration.seconds().toString(), 2, '0');
+    const milliseconds = padStart((duration.milliseconds() % 100).toString(), 2, '0');
+    return `${hours}:${minutes}:${seconds}:${milliseconds}`;
+  }
   render() {
     return (
       <View style={[styles.container]}>
         <View style={[styles.monitor, this.border('yellow')]}>
           <View style={[styles.timer, this.border('red')]}>
             <Text>
-              00:00.00
+              {this.formatDuration(this.state.timeElapsed)}
             </Text>
           </View>
           <View style={[styles.buttons, this.border('green')]}>

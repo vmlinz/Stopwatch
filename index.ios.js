@@ -21,16 +21,33 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'stretch',
   },
-  timer: {
+  timerWrapper: {
     flex: 5,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  timer: {
+    fontSize: 60,
   },
   buttons: {
     flex: 3,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-around',
+  },
+  startButton: {
+    borderColor: 'green',
+  },
+  lapButton: {
+
+  },
+  button: {
+    borderWidth: 2,
+    height: 100,
+    width: 100,
+    borderRadius: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   laps: {
     flex: 1,
@@ -58,6 +75,7 @@ class Stopwatch extends Component {
       <TouchableHighlight
         underlayColor={'grey'}
         onPress={this.onPress}
+        style={[styles.button, styles.startButton]}
       >
         <Text>
           Start
@@ -67,33 +85,30 @@ class Stopwatch extends Component {
   }
   lapButton() {
     return (
-      <View style={styles.stopButton}>
+      <View style={[styles.button, styles.stopButton]}>
         <Text>
           Lap
         </Text>
       </View>
     );
   }
-  border(color) {
+  border() {
     return {
-      borderColor: color,
-      borderWidth: 4,
     };
   }
   formatDuration(time) {
     const duration = Moment.duration(time);
-    const hours = padStart(duration.hours().toString(), 2, '0');
     const minutes = padStart(duration.minutes().toString(), 2, '0');
     const seconds = padStart(duration.seconds().toString(), 2, '0');
     const milliseconds = padStart((duration.milliseconds() % 100).toString(), 2, '0');
-    return `${hours}:${minutes}:${seconds}:${milliseconds}`;
+    return `${minutes}:${seconds}.${milliseconds}`;
   }
   render() {
     return (
       <View style={[styles.container]}>
         <View style={[styles.monitor, this.border('yellow')]}>
-          <View style={[styles.timer, this.border('red')]}>
-            <Text>
+          <View style={[styles.timerWrapper, this.border('red')]}>
+            <Text style={styles.timer}>
               {this.formatDuration(this.state.timeElapsed)}
             </Text>
           </View>

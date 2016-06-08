@@ -38,6 +38,9 @@ const styles = StyleSheet.create({
   startButton: {
     borderColor: 'green',
   },
+  stopButton: {
+    borderColor: 'red',
+  },
   lapButton: {
 
   },
@@ -51,45 +54,105 @@ const styles = StyleSheet.create({
   },
   laps: {
     flex: 1,
+    justifyContent: 'flex-start',
+    alignItems: 'stretch',
+  },
+  lap: {
     justifyContent: 'space-around',
-    alignItems: 'center',
+    flexDirection: 'row',
+  },
+  lapText: {
+    fontSize: 24,
   },
 });
 
 class Stopwatch extends Component {
   constructor(props) {
     super(props);
-    this.state = { timeElapsed: 0 };
-    this.onPress = this.onPress.bind(this);
+    this.state = {
+      timeElapsed: 0,
+      timerRunning: false,
+      startTime: null,
+      laps: [],
+    };
+    this.onPressStartStopButton = this.onPressStartStopButton.bind(this);
+    this.onPressLapButton = this.onPressLapButton.bind(this);
   }
-  onPress() {
-    const start = new Date();
-    setInterval(() => {
+  onPressStartStopButton() {
+    // stop timer if running
+    if (this.state.timerRunning) {
+      clearInterval(this.state.timerInterval);
       this.setState({
-        timeElapsed: new Date() - start,
+        timerInterval: null,
+        timerRunning: false,
+      });
+      return;
+    }
+
+    // set current start time
+    this.setState({ startTime: new Date() });
+
+    // start timer
+    const interval = setInterval(() => {
+      this.setState({
+        timeElapsed: new Date() - this.state.startTime,
       });
     }, 30);
+
+    this.setState({
+      timerInterval: interval,
+      timerRunning: true,
+    });
+  }
+  onPressLapButton() {
+    const lap = this.state.timeElapsed;
+
+    this.setState({
+      startTime: new Date(),
+      laps: this.state.laps.concat([lap]),
+    });
   }
   startStopButton() {
+    const style = this.state.timerRunning ? styles.stopButton : styles.startButton;
+
     return (
       <TouchableHighlight
         underlayColor={'grey'}
-        onPress={this.onPress}
-        style={[styles.button, styles.startButton]}
+        onPress={this.onPressStartStopButton}
+        style={[styles.button, style]}
       >
         <Text>
-          Start
+          {this.state.timerRunning ? 'Stop' : 'Start'}
         </Text>
       </TouchableHighlight>
     );
   }
   lapButton() {
     return (
-      <View style={[styles.button, styles.stopButton]}>
+      <TouchableHighlight
+        underlayColor={'grey'}
+        style={[styles.button, styles.lapButton]}
+        onPress={this.onPressLapButton}
+      >
         <Text>
           Lap
         </Text>
-      </View>
+      </TouchableHighlight>
+    );
+  }
+  formatTime(time) {
+    return this.formatDuration(time);
+  }
+  laps() {
+    return this.state.laps.map((time, index) => (
+      <View key={index} style={styles.lap}>
+        <Text style={styles.lapText}>
+          Lap #{index + 1}
+        </Text>
+        <Text style={styles.lapText}>
+          {this.formatTime(time)}
+        </Text>
+      </View>)
     );
   }
   border() {
@@ -118,21 +181,7 @@ class Stopwatch extends Component {
           </View>
         </View>
         <View style={[styles.laps, this.border('blue')]}>
-          <View style={styles.lap}>
-            <Text>
-              Lap 1
-            </Text>
-          </View>
-          <View style={styles.lap}>
-            <Text>
-              Lap 1
-            </Text>
-          </View>
-          <View style={styles.lap}>
-            <Text>
-              Lap 1
-            </Text>
-          </View>
+          {this.laps()}
         </View>
       </View>
     );
